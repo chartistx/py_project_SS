@@ -4,24 +4,27 @@ import re
 import time
 import pandas as pd
 
-def get_flat_data(flat,region):
+
+def get_flat_data(flat,region):#function reads data about flat and stores it in a list.
     specs = [region]
     for spec in flat.find_all('td',{'class':'msga2-o pp6'}):
-        if spec.find("br"):#Fro address regian an adrees had <br> as separator, thus no space
+        if spec.find("br"):#area and adress had <br> as separator, thus no space
             spec.find("br").replace_with(" ")# replace with space
         specs.append(spec.get_text())
-    flat_data.append(specs)
+    flat_data.append(specs) #addin data from this flat to list with data from other flats
+
+
 def get_flats_from_region(link,region):
     page=1
-    while True:
+    while True:#while page exsist, read data
         response = requests.get('https://www.ss.lv/'+link+'all/page'+str(page)+'.html', allow_redirects=False)
-
+        #check if page exist, request successful
         if response.status_code != 200:
             break
-        print(region, page)
+        print(region, page)#informative message to inform of scraping status
         #get flat from page
         page_data = BeautifulSoup(response.content, features="html.parser")
-        page_regex = re.compile('.*tr_.*')  # izmantojam regex recomplile lai varētu meklēt pēc daļēja satura atbilstības
+        page_regex = re.compile('.*tr_.*')  #using regex so that find on patial match can be used
         for each_flat in page_data.find_all("tr", {"id": page_regex}):
             id = each_flat.get("id")
             if id == "tr_bnr_712":
@@ -31,15 +34,15 @@ def get_flats_from_region(link,region):
         time.sleep(0.25)#to not overload web server time delay is used before next request
 
 
-#atrodam visus reģionus un linkus uz tiem
+#find all regions
 response = requests.get('https://www.ss.lv/lv/real-estate/flats/')
 soup = BeautifulSoup(response.content,features="html.parser")
 
-flat_data=[]
-regex = re.compile('.*ahc_.*')#izmantojam regex recomplile lai varētu meklēt pēc daļēja satura atbilstības
-for EachPart in soup.find_all("a", {"id" : regex}):
-    link   = EachPart.get('href')
-    region = EachPart.get_text()
+flat_data=[]#will hld all the scraped data about flats
+regex = re.compile('.*ahc_.*') #using regex so that find on patial match can be used
+for each_region in soup.find_all("a", {"id" : regex}):
+    link   = each_region.get('href')
+    region = each_region.get_text()
     if link == '/lv/real-estate/flats/other/' or link == '/lv/real-estate/flats/flats-abroad-latvia/':
         continue
     get_flats_from_region(link,region)
