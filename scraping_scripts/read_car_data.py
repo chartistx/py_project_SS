@@ -7,7 +7,8 @@ import pandas as pd
 
 def get_car_data(car,manufacturer):#function reads data about car and stores it in a list.
     specs = [manufacturer]
-    for spec in car.find_all('td',{'class':'msga2-o pp6'}):
+    regex_specs = re.compile('.*msga2-.*')  # using regex so that find on patial match can be used
+    for spec in car.find_all('td',{'class':regex_specs}):
         if spec.find("br"):#in category other manufacturers, manufacturer and model had no space
             spec.find("br").replace_with(" ")# replace with space
         specs.append(spec.get_text())
@@ -40,7 +41,7 @@ soup = BeautifulSoup(response.content,features="html.parser")
 
 car_data=[]#will hold all the scraped data about cars
 regex = re.compile('.*ahc_.*') #using regex so that find on patial match can be used
-skip_list=['Ekskluzīvas automašīnas','Elektromobīļi', 'Retro automašīnas',
+skip_list=['Citas markas','Ekskluzīvas automašīnas','Elektromobīļi', 'Retro automašīnas',
            'Sporta automašīnas', 'Tūningotas automašīnas', 'Vieglo auto maiņa',
            'Auto ar defektiem vai pēc avārijas', 'Auto remonts un apkalpošana',
            'Autoevakuācija', 'Autonoma', 'Piekabes un treileri',
@@ -51,7 +52,9 @@ for each_manufacturer in soup.find_all("a", {"id" : regex}):
     if manufacturer not in skip_list:
         get_cars_from_manufacturer(link, manufacturer)
 
+
 #export data to csv
+#print(car_data)
 df = pd.DataFrame(car_data,columns=['Manufacturer','Model','Year','Motor Liters','Milage','Price'])
 df.to_csv('ss_car_data.csv')
 
