@@ -54,9 +54,10 @@ for each_manufacturer in soup.find_all("a", {"id" : regex}):
 
 
 #export data to csv
-#print(car_data)
 df = pd.DataFrame(car_data,columns=['Manufacturer','Model','Year','Motor Liters','Milage','Price'])
 df.to_csv('ss_car_data.csv')
+
+print('Done')
 
 
 
