@@ -3,8 +3,10 @@ from bs4 import BeautifulSoup
 import re
 import time
 import pandas as pd
+import os
 
-
+#get path for data file
+path_parent = os.path.join(os.getcwd(),os.pardir)
 def get_flat_data(flat,region):#function reads data about flat and stores it in a list.
     specs = [region]
     for spec in flat.find_all('td',{'class':'msga2-o pp6'}):
@@ -49,7 +51,7 @@ for each_region in soup.find_all("a", {"id" : regex}):
 
 #export data to csv
 df = pd.DataFrame(flat_data,columns=['Region','Area','Nr of rooms','m2','Floor','House type','Price'])
-df.to_csv('ss_flat_data.csv')
+df.to_csv(path_parent+'\\data\\ss_flat_data.csv')
 
 print('Done')
 

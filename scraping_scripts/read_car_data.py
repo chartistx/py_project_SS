@@ -3,7 +3,10 @@ from bs4 import BeautifulSoup
 import re
 import time
 import pandas as pd
+import os
 
+#get path for data file
+path_parent = os.path.join(os.getcwd(),os.pardir)
 
 def get_car_data(car,manufacturer):#function reads data about car and stores it in a list.
     specs = [manufacturer]
@@ -34,7 +37,6 @@ def get_cars_from_manufacturer(link,manufacturer):#parses though all pages in cu
         page+=1
         time.sleep(0.25)#to not overload web server time delay is used before next request
 
-
 #find all manufacturers
 response = requests.get('https://www.ss.lv/lv/transport/cars/')
 soup = BeautifulSoup(response.content,features="html.parser")
@@ -52,10 +54,9 @@ for each_manufacturer in soup.find_all("a", {"id" : regex}):
     if manufacturer not in skip_list:
         get_cars_from_manufacturer(link, manufacturer)
 
-
 #export data to csv
 df = pd.DataFrame(car_data,columns=['Manufacturer','Model','Year','Motor Liters','Milage','Price'])
-df.to_csv('ss_car_data.csv')
+df.to_csv(path_parent+'\\data\\ss_car_data.csv')
 
 print('Done')
 
