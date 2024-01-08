@@ -51,5 +51,7 @@ for each_region in soup.find_all("a", {"id" : regex}):
 df = pd.DataFrame(flat_data,columns=['Region','Area','Nr of rooms','m2','Floor','House type','Price'])
 df.to_csv('ss_flat_data.csv')
 
+print('Done')
+
 
 
